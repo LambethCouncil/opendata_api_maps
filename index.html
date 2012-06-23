@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<title>Mapping Lambeth</title>
+<style type="text/css">
+	@font-face {
+	    font-family: 'LeagueGothicRegular';
+	    src: url('fonts/League_Gothic-webfont.eot');
+	    src: url('fonts/League_Gothic-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('fonts/League_Gothic-webfont.woff') format('woff'),
+	         url('fonts/League_Gothic-webfont.ttf') format('truetype'),
+	         url('fonts/League_Gothic-webfont.svg#LeagueGothicRegular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+	html { height: 100%; }
+	body { height: 100%; margin: 0; padding: 0; font-family:'LeagueGothicRegular',helvetica,arial; font-size:22px; color:#5f604b; text-transform:uppercase; }
+	p { text-transform:none; color:#949484; margin:0; padding:0; font-size:20px;}
+	#map_canvas { height: 100% }
+	div {width:400px}
+	#signpost { position:absolute; bottom:0; left:30px }
+	#logo { position:absolute; bottom:20px; right:10px }
+	
+	/* Green: #00b25a / Blue: #06357a  */
+</style>
+
+<script type="text/javascript"
+    src="http://maps.googleapis.com/maps/api/js?sensor=false">
+</script>
+
+<script type="text/javascript">
+
+	function initialize() {
+		
+		var latlng = new google.maps.LatLng(51.465164, -0.113823);
+	    
+		var myOptions = {
+	      zoom: 15,
+	      center: latlng,
+		  mapTypeControl: false,
+	      mapTypeId: google.maps.MapTypeId.ROADMAP
+	    };
+
+		var map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+		
+		/* POSTCODE API http://maps.googleapis.com/maps/api/geocode/json?address=GL10 2ET&sensor=false */
+		
+	    var locations = [
+			["Tulse Hill Youth and Play Project<p>Tulse Hill Estate South<br />SW2 2EY<br /><br /><strong>Notes:</strong><br />200000490506</p>",51.44868630289598,-0.11540441400744343,"Adventure Playgrounds.png"],
+			["Willington Adventure Playground<p>Willington Road<br />SW9 9NB<br /><br /><strong>Notes:</strong><br />100023389720</p>",51.46371038332268,-0.12477664511142025,"Adventure Playgrounds.png"],
+			["Loughborough Park Play Project<p>Moorland Road<br />SW9 8UA<br /><br /><strong>Notes:</strong><br />010090198767</p>",51.46207953234223,-0.10500587863704322,"Adventure Playgrounds.png"],
+			["Kennington Play Project<p>Bolton Crescent<br />SE5 0SE<br /><br /><strong>Notes:</strong><br />010000444593</p>",51.481201057643666,-0.10854835268437821,"Adventure Playgrounds.png"],
+			["Max Roach Play Project<p>Wiltshire Road<br />SW9 7NE<br /><br /><strong>Notes:</strong><br />010090195422</p>",51.46711227647217,-0.11038362127014564,"Adventure Playgrounds.png"],
+			["Lollard Street Adventure Playground<p>Lollard Street<br />SE11 6PY<br /><br /><strong>Notes:</strong><br />200000471175</p>",51.49277223762529,-0.11399015163604449,"Adventure Playgrounds.png"],
+			["Streatham Vale Play Project<p>Abercairn Road<br />SW16 5AL<br /><br /><strong>Notes:</strong><br />010090198766</p>",51.413956037161675,-0.14637118636715085,"Adventure Playgrounds.png"],
+			["Stewarts Road Adventure Playground<p>Clyston Street<br />SW8 4TU<br /><br /><strong>Notes:</strong><br />200000459694</p>",51.47275313367487,-0.1369476273553102,"Adventure Playgrounds.png"],
+			["Dexter Road Play Project<p>Montego Close<br />SE24 0LH<br /><br /><strong>Notes:</strong><br />200001084384</p>",51.459576149856375,-0.11036380938716595,"Adventure Playgrounds.png"],
+			["Triangle Adventure Playground<p>Ashmole Street<br />SW8 1NF<br /><br /><strong>Notes:</strong><br />100023382453</p>",51.481983096952305,-0.11578911899312713,"Adventure Playgrounds.png"],
+			["Slade Gardens Adventure Playground<p>Lorn Road<br />SW9 0AB<br /><br /><strong>Notes:</strong><br />010090200994</p>",51.471638093227945,-0.11612899161788659,"Adventure Playgrounds.png"],
+			["Blackfriars Play Space<p>1 Coral Street<br />SE1 7BE<br /><br /><strong>Notes:</strong><br />200000490853</p>",51.50089008486795,-0.10881387498042007,"Adventure Playgrounds.png"],
+			["Oasis Cycle Project &amp; Adventure Playground<p>25-61 Priory Grove<br />SW2 2PD<br /><br /><strong>Notes:</strong><br />200000477413</p>",51.47395531914762,-0.1283020524087733,"Adventure Playgrounds.png"],
+			["Charlie Chaplin Adveture Playground<p>Bolton Crescent<br />SE5 0SE<br /><br /><strong>Notes:</strong><br />010000444593</p>",51.48077777302394,-0.10683764334537858,"Adventure Playgrounds.png"],
+			["Grove Adventure Playground<p>18 Gordon Grove<br />SE5 9DT<br /><br /><strong>Notes:</strong><br />200000464829</p>",51.468545049061305,-0.10332699758916997,"Adventure Playgrounds.png"],
+			["Aroma Portuguese Deli<p>64 Streatham Hill, SW2 4RD<br />SW2 4RD<br /><br /><strong>Notes:</strong><br />Mon - Sat: 08:00 - 20:00 Sun: Closed</p>",51.44162796055824,-0.12499061159084454,"Community Toilets.png"],
+			["Edenic Creations<p>5 Station Rise<br />SE27 9BW<br /><br /><strong>Notes:</strong><br />Mon - Sun: 06:45 - 10:30</p>",51.44013691897131,-0.1055257448288276,"Community Toilets.png"],
+			["Wimpy<p>160 Streatham High Road, SW16 1BJ<br />SW16 1BJ<br /><br /><strong>Notes:</strong><br />Mon - Sun: 09:00 - 23:00</p>",51.432862712006774,-0.12909006544644028,"Community Toilets.png"],
+			["Music Bar &amp; Club<p>144 Brixton Hill, SW2 1SD<br />SW2 1SD<br /><br /><strong>Notes:</strong><br />Mon - Tue: 12:00 - 00:00 Wed - Thu: 12:00 - 01:00 Fri: 12:00 - 03:00 Sat: 15:00 - 03:00 Sun: Closed</p>",51.45222471775182,-0.1218362275327664,"Community Toilets.png"],
+			["The Hamlet<p>10 Streatham High Road<br />SW16 1DB<br /><br /><strong>Notes:</strong><br />Mon - Thu: 11:00 - 23:00 Fri &amp; Sat: 11:00 - 03:00 Sun: 12:00 - 00:00</p>",51.43785459257664,-0.12746165583671284,"Community Toilets.png"],
+			["Brasserie Toulouse Lautrec<p>140 Newington Butts, SE11 4RN<br />SE11 4RN<br /><br /><strong>Notes:</strong><br />Mon - Sat: 12:00 - 00:00 Sun: 09:00 - 21:00</p>",51.49109964996767,-0.10339940196739175,"Community Toilets.png"],
+			["Starbucks<p>Unit 1, 40 - 42 Old Town, SW4 0LB<br />SW4 0LB<br /><br /><strong>Notes:</strong><br />Mon - Sat: 07:00 - 18:00 Sun: 08:00 - 18:00</p>",51.46382260616949,-0.14199021578629267,"Community Toilets.png"],
+			["Ella's Cafe<p>93 Norwood High Street, SE27 9JS<br />SE27 9JS<br /><br /><strong>Notes:</strong><br />Mon - Sat: 07:00 - 16:00 Sun: Closed</p>",51.42992507691665,-0.10131593925626359,"Community Toilets.png"],
+			["McDonalds<p>2 - 22 Streatham Place, SW2 4PZ<br />SW2 4PZ<br /><br /><strong>Notes:</strong><br />Mon - Sun: 07:00 - 00:00</p>",51.44587544920407,-0.12517639878900874,"Community Toilets.png"],
+			["Machico Tapas Bar<p>133 South Lambeth Road, SW8 1XB<br />SW8 1XB<br /><br /><strong>Notes:</strong><br />Mon - Sun: 08:00 - 23:00</p>",51.478659628435224,-0.1233138874819387,"Community Toilets.png"],
+			["The Fish Club<p>57 Clapham High Street, SW4 7TG<br />SW4 7TG<br /><br /><strong>Notes:</strong><br />Mon: 17:00 - 22:00 Tue - Sun: 12:00 - 22:00</p>",51.46350716283878,-0.13289013387645346,"Community Toilets.png"],
+			["McDonalds<p>518 - 522 Brixton Road, SW9 8EN<br />SW9 8EN<br /><br /><strong>Notes:</strong><br />Mon - Sun: 05:00 - 00:00</p>",51.461339360566576,-0.1159916848407323,"Community Toilets.png"],
+			["Oval Tandoori<p>64A - 66 Brixton Road, SW9 6BP<br />SW9 6BP<br /><br /><strong>Notes:</strong><br />Mon - Sun: 12:00 - 14:30 &amp; 18:00 - 00:00</p>",51.478590257568165,-0.11227105657210563,"Community Toilets.png"],
+			["Secondo<p>4 Voltaire Road<br />SW4 6DH<br /><br /><strong>Notes:</strong><br />Mon - Thu: 09:00 - 22:00 Fri &amp; Sat: 09:00 - 01:00 Sun: 09:00 - 20:00</p>",51.46482789207036,-0.1311230079092134,"Community Toilets.png"],
+			["Crown &amp; Cushion<p>133 - 135 Westminster Bridge Road, SE1 7HR<br />SE1 7HR<br /><br /><strong>Notes:</strong><br />Mon - Sat: 11:00 - 23:00 Sun: 12:00 - 22:30</p>",51.49946335833939,-0.11403090734402824,"Community Toilets.png"],
+			["McDonalds<p>130 - 134 Clapham High Street, SW4 7UH<br />SW4 7UH<br /><br /><strong>Notes:</strong><br />Mon - Thu: 06:00 - 22:00 Fri: 06:00 - 00:00 Sat: 00:00 - 04:00 &amp; 06:00 - 00:00 Sun: 06:00 - 22:00</p>",51.462920680085745,-0.13559176047372817,"Community Toilets.png"],
+			["Little Rock Cafe<p>130 Norwood High Street, SE27 9NH<br />SE27 9NH<br /><br /><strong>Notes:</strong><br />Mon - Sat: 06:00 - 15:00 Sun: Closed</p>",51.427951082239765,-0.10047711448668033,"Community Toilets.png"],
+			["Starbucks<p>39 Abbeville Road, SW4 9JX<br />SW4 9JX<br /><br /><strong>Notes:</strong><br />Mon - Sat: 07:00 - 17:30 Sun: 09:00 - 16:30</p>",51.45420961000009,-0.14029351412432856,"Community Toilets.png"],
+			["Nolan's<p>33 Wilcox Road, SW8 2XA<br />SW8 2XA<br /><br /><strong>Notes:</strong><br />Mon - Thu: 11:00 - 01:00 Fri - Sat: 11:00 - 02:00 Sun: 12:00 - 00:00 </p>",51.47967277767089,-0.12593657146733217,"Community Toilets.png"],
+			["Walrus Social<p>172 Westminster Bridge Road, SE1 7RW<br />SE1 7RW<br /><br /><strong>Notes:</strong><br />Mon - Sun: 10:00 - 23:00</p>",51.50003669145756,-0.11445388411677224,"Community Toilets.png"],
+			["Garden Museum<p>5 Lambeth Palace Road, SE1 7LB<br />SE1 7LB<br /><br /><strong>Notes:</strong><br />Sun - Fri: 10:30 - 17:00 Sat:10:30 - 16:00 </p>",51.49491437765282,-0.12026931612215523,"Community Toilets.png"],
+			["The Corner<p>463 Norwood Road, SE27 9DJ<br />SE27 9DJ<br /><br /><strong>Notes:</strong><br />Mon - Sun: 11:00 - 00:00</p>",51.43641396559837,-0.1044136489333793,"Community Toilets.png"],
+			["Starbucks<p>202 - 204 Clapham High Street, SW4 7UD<br />SW4 7UD<br /><br /><strong>Notes:</strong><br />Mon - Sat: 07:00 - 20:00 Sun: 07:00 - 19:30</p>",51.46209819341153,-0.13815896184561513,"Community Toilets.png"],
+			["Doghouse<p>293 Kennington Road, SE11 6BY<br />SE11 6BY<br /><br /><strong>Notes:</strong><br />Sun - Thu: 12:00 - 00:00 Fri - Sat: 12:00 - 01:30</p>",51.48916024527918,-0.11082618080758032,"Community Toilets.png"],
+			["The Windmill<p>44 Lambeth High Street, SE1 7JS<br />SE1 7JS<br /><br /><strong>Notes:</strong><br />Mon - Sun: 10:30 - 23:00</p>",51.493101386015745,-0.12048795294270777,"Community Toilets.png"],
+			["Cubana Bar &amp; Restaurant<p>48 Lower Marsh, SE1 7RG<br />SE1 7RG<br /><br /><strong>Notes:</strong><br />Mon - Tue: 12:00 - 00:00 Wed - Thu: 12:00 - 01:00 Fri: 12:00 - 03:00 Sat: 15:00 - 03:00 Sun: Closed   </p>",51.50150003799761,-0.11094988140145103,"Community Toilets.png"],
+			["The Nott<p>257 Wandsworth Road, SW8 2NB<br />SW8 2NB<br /><br /><strong>Notes:</strong><br />Mon - Sat: 12:00 - 23:00 Sun: 12:00 - 22:30</p>",51.47871939099335,-0.12874067575158393,"Community Toilets.png"],
+			["The Hole In The Wall<p>5 Mepham Street, SE1 8SQ<br />SE1 8SQ<br /><br /><strong>Notes:</strong><br />Mon - Sat: 11:00 - 23:00 Sun: 12:00 - 22:30</p>",51.50405499260255,-0.11325055467720038,"Community Toilets.png"],
+			["Kurt Anderson CafÃ©<p>127 Clapham High Street, SW4 7SS<br />SW4 7SS<br /><br /><strong>Notes:</strong><br />Mon: Closed Tue - Sun: 10:00 - 22:00 </p>",51.46250500110668,-0.13546474118487517,"Community Toilets.png"],
+			["Cherry'N'Berry<p>85 Streatham Hill, SW2 4UB<br />SW2 4UB<br /><br /><strong>Notes:</strong><br />Mon - Sun: 11:00 - 23:00</p>",51.43924023063518,-0.12582222375932678,"Community Toilets.png"],
+			["Chaplin Close Tenants  Association<p>Chaplin Close Back Door Veg Patch<br />SE18TU<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.50193361830363,-0.10660939428922034,"Food Growing Projects.png"],
+			["Johanna Primary School<p>Johanna Primary School Vegetable Garden<br />SE17RH<br /><br /><strong>Notes:</strong><br />School</p>",51.50070695896677,-0.1114005121581045,"Food Growing Projects.png"],
+			["The Oasis Center<p>Westminister Bridge Road<br />SE17HS<br /><br /><strong>Notes:</strong><br />Faith</p>",51.49838152262895,-0.11162630876329493,"Food Growing Projects.png"],
+			["Three Stags pub 67 Kennington Road<p>Rooftop bees and herbs as part of this Sustainable Restaurant Association pub<br />SE1 7PZ<br /><br /><strong>Notes:</strong><br />Food business</p>",51.49689294010278,-0.11132766027945307,"Food Growing Projects.png"],
+			["Honey from Eden<p>199 Hercules Road<br />SE17LD<br /><br /><strong>Notes:</strong><br />Food business</p>",51.496608673601614,-0.1148978994576219,"Food Growing Projects.png"],
+			["Urban Herb Group<p>1a Briant House<br />SE1 7DE<br /><br /><strong>Notes:</strong><br />  Sidford Place</p>",51.496015516734175,-0.11436051264440363,"Food Growing Projects.png"],
+			["Garden Museum<p>Food growing in planted borders<br />SE1 7LB<br /><br /><strong>Notes:</strong><br />Charity</p>",51.49504825389701,-0.12020618332459715,"Food Growing Projects.png"],
+			["Walnut Tree Walk Primary School<p>Food and biodiversity garden<br />SE116DS<br /><br /><strong>Notes:</strong><br />School</p>",51.49393952310591,-0.11332251521837433,"Food Growing Projects.png"],
+			["Black Prince Trust community hub<p><br />SE116PY<br /><br /><strong>Notes:</strong><br />Charity</p>",51.49233239975764,-0.1145989296028336,"Food Growing Projects.png"],
+			["Jamyang Buddhist Centre courtyard garden and cafe<p>Food growing in courtyard at The Old Courhouse  43 Renfrew Road <br />SE114NA<br /><br /><strong>Notes:</strong><br />Faith</p>",51.49209891021683,-0.1056916087825648,"Food Growing Projects.png"],
+			["Archbishop Sumner Primary<p>Food-growing educational space<br />SE114PH<br /><br /><strong>Notes:</strong><br />School</p>",51.4916010554212,-0.10994739454847327,"Food Growing Projects.png"],
+			["Friends of Archbishops Park<p>Raised plots for designated class growing fruits and veg. Fruit trees.  Working<br />SE114PH<br /><br /><strong>Notes:</strong><br />Park</p>",51.4916010554212,-0.10994739454847327,"Food Growing Projects.png"],
+			["Ethelred Estate<p><br />SE11 6UG<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.49142484992477,-0.11296536988090077,"Food Growing Projects.png"],
+			["VGERTA Community Garden<p>New growing spaces under development<br />SE115JT<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.49130562653346,-0.11897724377793054,"Food Growing Projects.png"],
+			["Arden House Community Growing Space<p>Wheat &amp; Fruit Growing - VEGERTA  is Vauxhall Gardens Estate Residents and Tenants Assco<br />SE115QH<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.491067355125374,-0.11869894973925083,"Food Growing Projects.png"],
+			["Cottington Close Community Garden<p>Community garden on estate<br />SE114HZ<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.49001580494986,-0.10533140774094464,"Food Growing Projects.png"],
+			["Real World/Why World Wide<p>The Garden at The Spring - Vauxhall garden Community Centre<br />SE115EL<br /><br /><strong>Notes:</strong><br />Charity</p>",51.48933621630167,-0.12065720553535558,"Food Growing Projects.png"],
+			["Vauxhall Primary School Garden<p><br />SE115LG<br /><br /><strong>Notes:</strong><br />School</p>",51.48927645269376,-0.11805244652213204,"Food Growing Projects.png"],
+			["Orsett Road Community Garden<p>Metropolital Housing Trust-led food growing project<br />SE115PW<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.489028178930226,-0.11603164432964368,"Food Growing Projects.png"],
+			["Spring Gardens<p>Allotments<br />SE115EX<br /><br /><strong>Notes:</strong><br />Allotments</p>",51.48868824224286,-0.12006446486456919,"Food Growing Projects.png"],
+			["St Peters Garden Project<p>Church with bees and small garden<br />SE115HY<br /><br /><strong>Notes:</strong><br />Faith</p>",51.486524063020944,-0.11969256338802146,"Food Growing Projects.png"],
+			["Hornby House gardeners<p>Resident of Kennington Park estate who runs food growing  sessions with young children<br />SE115DA<br /><br /><strong>Notes:</strong><br /> Hyde Housing</p>",51.484902047406365,-0.11165032056675528,"Food Growing Projects.png"],
+			["Kennington Park Keepers' Lodge Beekeeping project<p>Keepers Lodge food growing project<br />SE11 4AU<br /><br /><strong>Notes:</strong><br />Park</p>",51.48432852374232,-0.10954237458116511,"Food Growing Projects.png"],
+			["The Triangle Playground<p><br />SW81NE<br /><br /><strong>Notes:</strong><br />Private</p>",51.48248178738298,-0.11660390173239328,"Food Growing Projects.png"],
+			["Wyvil Primary School<p><br />SW8 2TJ<br /><br /><strong>Notes:</strong><br />School</p>",51.48129292433458,-0.12546690010968015,"Food Growing Projects.png"],
+			["The Sustaining Garden<p>47 Fentiman Road<br />SW81LH<br /><br /><strong>Notes:</strong><br /> shared garden</p>",51.48041997466261,-0.11756734903159045,"Food Growing Projects.png"],
+			["St. Stephen's School Garden<p><br />SW8 1EJ<br /><br /><strong>Notes:</strong><br />School</p>",51.47978964479655,-0.12256182718766191,"Food Growing Projects.png"],
+			["Bolney Meadows<p><br />SW8 1AU<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.47940859053836,-0.11674490843575776,"Food Growing Projects.png"],
+			["Plant-ing @ Latch House<p>NACRO Food growing project<br />SW9 0JU<br /><br /><strong>Notes:</strong><br />Charity</p>",51.478556911004716,-0.11634795638631323,"Food Growing Projects.png"],
+			["Herbert Morrison School Garden<p><br />SW8 2HP<br /><br /><strong>Notes:</strong><br />School</p>",51.47865567226065,-0.12587745516918283,"Food Growing Projects.png"],
+			["Church Manor Community Garden Project<p>Church Manor Estate<br />SW96NE<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.47771213076924,-0.11023358614741958,"Food Growing Projects.png"],
+			["Holland Rise House and Whitebeam Close TMO<p> <br />SW90EG<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.47774718903957,-0.11632371267430146,"Food Growing Projects.png"],
+			["St John the Divine School<p>Established food growing projects<br />SW96XN<br /><br /><strong>Notes:</strong><br />School</p>",51.47745706498098,-0.1050166357043102,"Food Growing Projects.png"],
+			["Reay Primary School<p>Recently funded by Capital Growth<br />SW90EN<br /><br /><strong>Notes:</strong><br />School</p>",51.47750286314279,-0.11510971014128814,"Food Growing Projects.png"],
+			["Caldwell Gardens<p>Food growing in containters<br />SW90HB<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.47673813705601,-0.1128515453444086,"Food Growing Projects.png"],
+			["Cowley Food Farm<p>Cowley estate<br />SW96LZ<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.47639149875924,-0.11198742412348296,"Food Growing Projects.png"],
+			["Ekarro Housing Co-op<p><br />SW8 2DF<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.47605785543588,-0.1248175088512935,"Food Growing Projects.png"],
+			["Lambeth College<p>Vauxhall Centre<br />SW82JY<br /><br /><strong>Notes:</strong><br />School</p>",51.47603260250497,-0.13224910932255998,"Food Growing Projects.png"],
+			["Myatts Fields North 3D Community Garden<p>Bramah Green Community Centre<br />SW97RJ<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.47510124906218,-0.10893028673820046,"Food Growing Projects.png"],
+			["Calais Gate &amp; Coligny Court<p>Spectacular food growing and composting in community garden<br />SE59RQ<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.47491601632092,-0.10414274471100568,"Food Growing Projects.png"],
+			["Growing Stannard Hall-Mace Co-op<p><br />SE59RF<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.47358741888973,-0.10595457892709503,"Food Growing Projects.png"],
+			["Oasis Adventure Playground<p>Forest Garden<br />sw82pd<br /><br /><strong>Notes:</strong><br />Charity</p>",51.473462170436974,-0.12895581589779898,"Food Growing Projects.png"],
+			["Brixton Community Orchard<p>211-255 Brixton Road<br />SW96LW<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.472746870949436,-0.11238269170746686,"Food Growing Projects.png"],
+			["Myatts Fields Park Greenhouses<p>Gardening courses and food growing for caf<br />SE59RA<br /><br /><strong>Notes:</strong><br />Park</p>",51.47258432773908,-0.10565054335806989,"Food Growing Projects.png"],
+			["Blooming Stockwell/Hyde Housing Squires Court<p>Stockwell<br />SW46TD<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.4727680386281,-0.12490921671686554,"Food Growing Projects.png"],
+			["Lorn Road Allotments<p>Long-standing allotments<br />SW81BH<br /><br /><strong>Notes:</strong><br />Allotments</p>",51.47254405618705,-0.11486773408760176,"Food Growing Projects.png"],
+			["Slade Gardens Permaculture Garden<p>TTB/BLIP<br />SW9 0DJ<br /><br /><strong>Notes:</strong><br />Park</p>",51.47136834811424,-0.11389387913499693,"Food Growing Projects.png"],
+			["Spring Up<p>Springfield Community Flat (SCF)<br />SW82RE<br /><br /><strong>Notes:</strong><br />Charity</p>",51.47157440007306,-0.13577174152869637,"Food Growing Projects.png"],
+			["Loughborough Primary School<p><br />SW97UA<br /><br /><strong>Notes:</strong><br />School</p>",51.47020326457474,-0.10521642752356637,"Food Growing Projects.png"],
+			["York Close<p>Community Area York Close<br />SE59DA<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.46973044117985,-0.09989421734078799,"Food Growing Projects.png"],
+			["Colours of Food CafÃƒÂ©/Baytree Centre<p>Papa's Park<br />SW96AE<br /><br /><strong>Notes:</strong><br />Charity</p>",51.46983247222803,-0.11289173952176634,"Food Growing Projects.png"],
+			["Heathbrook School<p><br />SW8 3EH<br /><br /><strong>Notes:</strong><br />School</p>",51.46959307132657,-0.14295085245112013,"Food Growing Projects.png"],
+			["Grove Adventure Playground<p>Gordon Grove<br />SE59DT<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.468550868175484,-0.10368670647831507,"Food Growing Projects.png"],
+			["Heathbrook Hall Garden<p> Heath Road Estate<br />SW83BN<br /><br /><strong>Notes:</strong><br /></p>",51.468781917214656,-0.14567621543166295,"Food Growing Projects.png"],
+			["St Andrew's School Garden<p><br />SW9 9DE <br /><br /><strong>Notes:</strong><br />School</p>",51.468347535971695,-0.12234045213590664,"Food Growing Projects.png"],
+			["Eden @ St Paul's churchyard<p><br />SW40DZ<br /><br /><strong>Notes:</strong><br />Faith</p>",51.46818474073554,-0.13976852459045908,"Food Growing Projects.png"],
+			["Oak Square Residents' Association GaFGP<p>Notting Hill Housing Association<br />SW9 9JW<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.46754217997855,-0.120904953278815,"Food Growing Projects.png"],
+			["Loughborough Green and Growing<p> Styles Gardens<br />SW97UZ<br /><br /><strong>Notes:</strong><br />Styles Gardens</p>",51.467114266460385,-0.10437976126808193,"Food Growing Projects.png"],
+			["Loughborough  Estate<p> Rupert Gardens<br />SW97LJ<br /><br /><strong>Notes:</strong><br /></p>",51.46695887241432,-0.10533643683786616,"Food Growing Projects.png"],
+			["Angell Town Community Garden<p>49 Wiltshire Road - Geli<br />SW97NE<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.46663847794708,-0.11000006832349984,"Food Growing Projects.png"],
+			["Stockwell Day Centre<p>Lambeth Social Services<br />SW90UB<br /><br /><strong>Notes:</strong><br />Charity</p>",51.46666239764398,-0.11483660532348589,"Food Growing Projects.png"],
+			["Rooftop@The Roastery<p><br />SW8 3JQ<br /><br /><strong>Notes:</strong><br />Food business</p>",51.4667002707755,-0.14767545524100364,"Food Growing Projects.png"],
+			["Food for our brains<p>  2nd Step nursery &amp; Pre-School<br />SW9 8RU<br /><br /><strong>Notes:</strong><br /></p>",51.46562515310195,-0.10238269150739543,"Food Growing Projects.png"],
+			["Landor Garden @ Landor Road<p>Family Mosaic<br />SW9 9RT<br /><br /><strong>Notes:</strong><br /> Atherfold &amp; Hemberton  Resident / Tenant Association</p>",51.4658874199026,-0.1265158301015136,"Food Growing Projects.png"],
+			["Ruskin Park Commnity Garden<p><br />SE58EL<br /><br /><strong>Notes:</strong><br />Park</p>",51.46507693862587,-0.0907727176093166,"Food Growing Projects.png"],
+			["Angell Terrace<p><br />SW9 7DA<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.46541521688617,-0.11333313057181763,"Food Growing Projects.png"],
+			["Family Mosaic / Gresham Road Community Group<p>Recently funded by Capital Growth<br />SW97PL<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.465332390724974,-0.11209840678966473,"Food Growing Projects.png"],
+			["The Courtyard Garden Group<p>Family Mosaic<br />SW9 7PL<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.465332390724974,-0.11209840678966473,"Food Growing Projects.png"],
+			["Landor Road Edible Bus Stop<p> <br />SW99RX<br /><br /><strong>Notes:</strong><br />Transport</p>",51.466607569496276,-0.12375083529867456,"Food Growing Projects.png"],
+			["Clapham Manor Primary School<p><br />SW4 0BZ<br /><br /><strong>Notes:</strong><br />School</p>",51.464630405524204,-0.13792632661918208,"Food Growing Projects.png"],
+			["Loughborough Park<p> <br /> <br /><br /><strong>Notes:</strong><br />Park</p>",51.463413651237296,-0.10464828804918797,"Food Growing Projects.png"],
+			["Macaulay Square<p>MACAULAY SQUARE<br />SW40QY<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.46355750857021,-0.14512499380870467,"Food Growing Projects.png"],
+			["Colcutt Lodge<p> Ferndale Road<br />SW47SF<br /><br /><strong>Notes:</strong><br />Metropolital Housing Trust-led food growing project</p>",51.46318630634373,-0.12743264732836468,"Food Growing Projects.png"],
+			["St. Saviours School<p> <br />SE240AY<br /><br /><strong>Notes:</strong><br />School</p>",51.46247293134024,-0.09764757229183185,"Food Growing Projects.png"],
+			["Cedars Estate Organic Garden<p>Cetra Housing Co-op Ltd<br />SW40NU<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.46325581995047,-0.14765657249050892,"Food Growing Projects.png"],
+			["Evelyn Grace Academy Community Garden<p><br />SE240QN<br /><br /><strong>Notes:</strong><br />School</p>",51.460814577286214,-0.10407937724311943,"Food Growing Projects.png"],
+			["Moorlands Estate<p>Nature Garden and Allotments - Metropolian Housing<br />SW98QT<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.46054724141843,-0.10701273939177544,"Food Growing Projects.png"],
+			["Vida Walsh centre<p>Windrush Square<br />SW21EP<br /><br /><strong>Notes:</strong><br />Charity</p>",51.46017145510478,-0.11438431534543363,"Food Growing Projects.png"],
+			["Iqra Primary School<p><br />SW4 7PA<br /><br /><strong>Notes:</strong><br />School</p>",51.460337261050284,-0.12809628712403354,"Food Growing Projects.png"],
+			["LB Lambeth Waste Depot<p>Shakespeare Road<br />SE240PZ<br /><br /><strong>Notes:</strong><br />Lambeth</p>",51.459784840822,-0.1043523744731768,"Food Growing Projects.png"],
+			["Bankton Road Community Garden<p>Community gardening and compoting amongst six houses<br />SW2 1BS<br /><br /><strong>Notes:</strong><br />Private</p>",51.45896447232828,-0.1114686961651935,"Food Growing Projects.png"],
+			["Notre Dame Estate<p><br />SW4 9QU<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.45904840149836,-0.13864294672092448,"Food Growing Projects.png"],
+			["Sudbourne Primary School<p>Sudbourne Primary School<br />SW25AP<br /><br /><strong>Notes:</strong><br />School</p>",51.45806721240923,-0.12054559356524147,"Food Growing Projects.png"],
+			["Effra Nature Garden<p>Nature Garden<br />SE240LG<br /><br /><strong>Notes:</strong><br />Park</p>",51.457785602803234,-0.10918542954713661,"Food Growing Projects.png"],
+			["St Matthews Estate<p><br />SW2 1SS<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.456943292715074,-0.11663332090596369,"Food Growing Projects.png"],
+			["Lambeth College<p>Herb garden and food growing space linked to kitchen<br />SW21QS<br /><br /><strong>Notes:</strong><br />Private</p>",51.456540608208876,-0.11955752423035905,"Food Growing Projects.png"],
+			["Brixton Thames Water allotments<p>Long-standing allotments<br />SW21LT<br /><br /><strong>Notes:</strong><br />Allotments</p>",51.45624921047745,-0.11597097270678661,"Food Growing Projects.png"],
+			["Corpus Christi School on Brixton Hill.<p><br />SW2 5BL<br /><br /><strong>Notes:</strong><br />School</p>",51.45616434624836,-0.12132906475821577,"Food Growing Projects.png"],
+			["Wakeford Close<p>Metropolital Housing Trust-led food growing project<br />SW49DS<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.45649895513329,-0.14289217311701272,"Food Growing Projects.png"],
+			["Herne Hill NHS surgery<p> <br />SE249QP<br /><br /><strong>Notes:</strong><br />GP Surgery</p>",51.45562842651228,-0.0992419967962265,"Food Growing Projects.png"],
+			["BLIP at Waldron House<p>Waldron Housing Estate<br />SW21PB<br /><br /><strong>Notes:</strong><br />Private</p>",51.45519915752551,-0.11610057032576335,"Food Growing Projects.png"],
+			["Cultivating Company<p>Josephine Avenue food growing project<br />SW22LA<br /><br /><strong>Notes:</strong><br />Private</p>",51.45482105188343,-0.11663430891797537,"Food Growing Projects.png"],
+			["St Judes School<p>Church school - technically a nature garden<br />SE24 0EL<br /><br /><strong>Notes:</strong><br />School</p>",51.45425839399086,-0.1051570648315826,"Food Growing Projects.png"],
+			["Blenheim Gardens<p>Edible Estate with allotments<br />SW25DA<br /><br /><strong>Notes:</strong><br />Lambeth</p>",51.45421538382195,-0.12316508279991864,"Food Growing Projects.png"],
+			["Project Frost<p>19B Helix Gardens<br />SW22JJ<br /><br /><strong>Notes:</strong><br />Private</p>",51.45387193092694,-0.11688927283866912,"Food Growing Projects.png"],
+			["Brixton Flour<p>Windmill Gardens<br />SW2<br /><br /><strong>Notes:</strong><br />Park</p>",51.4531890599049,-0.12253069878544603,"Food Growing Projects.png"],
+			["The Incredible Edible Gardens on Brixton Hill<p>Raleigh Gardens<br />SW2 1AD<br /><br /><strong>Notes:</strong><br />Private</p>",51.45290261486683,-0.11980777149853203,"Food Growing Projects.png"],
+			["Jubilee Primary School<p>Jubilee garden project<br />SW22JE<br /><br /><strong>Notes:</strong><br />School</p>",51.45241272972588,-0.11450252513880584,"Food Growing Projects.png"],
+			["Tulse Hill Estate Children's Organic Garden<p><br />SW2 2HX<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.452249227177255,-0.1127245474300832,"Food Growing Projects.png"],
+			["Metropolitan Housing Partnership - Bateman Mews<p>off Rathmell Road<br />SW48JH<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.45254567014827,-0.13517968770494646,"Food Growing Projects.png"],
+			["Our Garden<p>Tulse Hill Estate<br />SW22JB<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.451776953021884,-0.11411133125971978,"Food Growing Projects.png"],
+			["Childrens Organic Garden Renton Close<p>3 year project on Renton Close<br />SW21EZ<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.451536657797604,-0.12267045223177424,"Food Growing Projects.png"],
+			["Brockwell Park Community Greenhouses<p>Long-standing project in former park greenhouses<br />SE24<br /><br /><strong>Notes:</strong><br />Park</p>",51.4503411264348,-0.10871583154958656,"Food Growing Projects.png"],
+			["Somers Place Community Garden<p><br />SW2 2AH<br /><br /><strong>Notes:</strong><br />Private</p>",51.450039295930296,-0.11901869983063759,"Food Growing Projects.png"],
+			["Cressingham Gardeners<p>Cressingham Gardens Estate<br />SE249AE<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.44894528057752,-0.10136171882515288,"Food Growing Projects.png"],
+			["New Leaf at Brockwell Park Surgery<p><br />SE249AE<br /><br /><strong>Notes:</strong><br />GP surgery</p>",51.44894528057752,-0.10136171882515288,"Food Growing Projects.png"],
+			["Agnes Riley Gardens<p>park on corner of Poynders Road and Clarence Road (in NW corner of park)<br />SW120AH<br /><br /><strong>Notes:</strong><br />Park</p>",51.44947191838399,-0.13755007392632365,"Food Growing Projects.png"],
+			["Holmewood Nursery School and Treehouse Children's Centre<p>Holmewood Nursery School<br />SW22RW<br /><br /><strong>Notes:</strong><br />School</p>",51.447519122729474,-0.12000014287410049,"Food Growing Projects.png"],
+			["South London Botanical Institute<p> <br />SE24 9AQ<br /><br /><strong>Notes:</strong><br />Charity</p>",51.44343516577479,-0.1048424271862663,"Food Growing Projects.png"],
+			["Hamers House Gardening Club<p>Metropolital Housing Trust-led food growing project<br />SW22RR<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.44569893840134,-0.11865021395117296,"Food Growing Projects.png"],
+			["Lambeth Family Link Community Allotment Project<p>Rosendale Road<br />SE218LR<br /><br /><strong>Notes:</strong><br />Charity</p>",51.445350815552544,-0.09874779945688443,"Food Growing Projects.png"],
+			["Father Nature @ Rosendale Allotments<p><br />SE218LR<br /><br /><strong>Notes:</strong><br />Charity</p>",51.445350815552544,-0.09874779945688443,"Food Growing Projects.png"],
+			["Rosendale Road Allotments<p>New education centre currently being developed<br />SE218LR<br /><br /><strong>Notes:</strong><br />Allotments</p>",51.445350815552544,-0.09874779945688443,"Food Growing Projects.png"],
+			["Frederica House Gardening project<p>New food growing project<br />SW22BF<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.44531467729336,-0.10762835888228534,"Food Growing Projects.png"],
+			["St. Bede's Roman Catholic Nursery and Infant School<p>Thornton Road<br />SW120LF<br /><br /><strong>Notes:</strong><br />School</p>",51.44494703893929,-0.13518706086147717,"Food Growing Projects.png"],
+			["Going for Green @ Henry Cavendish Primary School<p><br />SW120JA<br /><br /><strong>Notes:</strong><br />School</p>",51.444744075776256,-0.14279348639985118,"Food Growing Projects.png"],
+			["Fork to Fork<p> St Martins-in-the-Fields High School for Girls<br />SW23UP<br /><br /><strong>Notes:</strong><br />St Martins-in-the-Fields High School for Girls</p>",51.44415194126522,-0.10969107114371585,"Food Growing Projects.png"],
+			["Tierney Road<p>Community Garden<br />SW24QH<br /><br /><strong>Notes:</strong><br />Transport</p>",51.44365905726202,-0.12828910078633438,"Food Growing Projects.png"],
+			["Palace  Project Community Gardens<p><br />SW2 3EA<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.44284670714814,-0.11911279150467807,"Food Growing Projects.png"],
+			["Fenstanton Primary School<p>Sensory Garden<br />SW23PW<br /><br /><strong>Notes:</strong><br />School</p>",51.442254939763544,-0.1136258469172563,"Food Growing Projects.png"],
+			["Metropolitan Housing Partnership - Arborfield Close<p>Tulse Hill<br />SW23NX<br /><br /><strong>Notes:</strong><br />Housing association</p>",51.44215889486648,-0.1199612622177446,"Food Growing Projects.png"],
+			["Hillside Gardens Community Allotment<p>Hillside Gardens Park<br />SW123HL<br /><br /><strong>Notes:</strong><br />Park</p>",51.43905205309958,-0.11464991211517556,"Food Growing Projects.png"],
+			["Lotus Garden<p> Lotus Close<br />SE218BJ<br /><br /><strong>Notes:</strong><br />Metropolital Housing Trust-led food growing project</p>",51.43629243301189,-0.09525361145672068,"Food Growing Projects.png"],
+			["L'Arche Gardens<p>Norwood Hight Street<br />SE27 9JU<br /><br /><strong>Notes:</strong><br />Charity</p>",51.43623397818865,-0.09663727686941004,"Food Growing Projects.png"],
+			["Streatham Court<p>Lambeth Mencap Pathways Gardening Project<br />SW161NQ<br /><br /><strong>Notes:</strong><br />Private</p>",51.43554765394251,-0.12941199357084132,"Food Growing Projects.png"],
+			["Streatham and Clapham school<p>New food growing space 2010<br />SW161AW<br /><br /><strong>Notes:</strong><br />School</p>",51.434758319036,-0.13744358727411568,"Food Growing Projects.png"],
+			["West Norwood Behind The Florist's<p>368 Norwood Road<br />SE279AA<br /><br /><strong>Notes:</strong><br />Private</p>",51.433906144729846,-0.10392759037677637,"Food Growing Projects.png"],
+			["Elmwood Primary School Permaculture Project<p><br />SE279RR<br /><br /><strong>Notes:</strong><br />School</p>",51.43168759582565,-0.09245276426933713,"Food Growing Projects.png"],
+			["Emmanuel Church<p><br />SE218BU<br /><br /><strong>Notes:</strong><br />Faith</p>",51.43154885330411,-0.09055954017909525,"Food Growing Projects.png"],
+			["Emmaus South Lambeth<p>9 Knights Hill<br />SE270DB<br /><br /><strong>Notes:</strong><br />Chairty</p>",51.43109030252172,-0.10385715135201522,"Food Growing Projects.png"],
+			["Unigate Woods<p>New orchard<br />SW162TB<br /><br /><strong>Notes:</strong><br />Park</p>",51.4305827656939,-0.11699824076661271,"Food Growing Projects.png"],
+			["Sunnyhill Road community allotments<p>Council land  given to local residents to develop as allotments<br />SW162UG<br /><br /><strong>Notes:</strong><br />Private</p>",51.430237344949454,-0.12630574649193896,"Food Growing Projects.png"],
+			["James Alleyn community garden and PELO grounds<p>Linked to Barnaby Shaw and growing for bees<br />SE279XH<br /><br /><strong>Notes:</strong><br />School</p>",51.42960557987686,-0.09935833528940931,"Food Growing Projects.png"],
+			["Julian's Primary School<p>Julian's Allotment<br />SW162RB<br /><br /><strong>Notes:</strong><br />School</p>",51.42911620578107,-0.11471368653234572,"Food Growing Projects.png"],
+			["Streatham Common Food Up Front Gardens<p>Two back gardens used as community gardens<br />SW162UN<br /><br /><strong>Notes:</strong><br />Private</p>",51.42883090191152,-0.12158730605580255,"Food Growing Projects.png"],
+			["Norwood Park<p>Community Food Project<br />SE27<br /><br /><strong>Notes:</strong><br />Park</p>",51.42517629671735,-0.09296846269789091,"Food Growing Projects.png"],
+			["Lakeview Road Community Garden<p>Portobello Estate<br />SE270QH<br /><br /><strong>Notes:</strong><br />Lambeth Housing</p>",51.424257837519605,-0.10898740988812182,"Food Growing Projects.png"],
+			["Elderwood Green and Growing<p>Behind Stable Mews<br />SE270HJ<br /><br /><strong>Notes:</strong><br />Private</p>",51.42401381844043,-0.09835332555056452,"Food Growing Projects.png"],
+			["Streatham Common Community Garden<p><br /><br /><br /><strong>Notes:</strong><br />Park</p>",51.421793685621076,-0.1156766679601534,"Food Growing Projects.png"],
+			["Baldry Gardens<p><br />SW16 3NP<br /><br /><strong>Notes:</strong><br />GP Surgery</p>",51.41860662691278,-0.12666635284041775,"Food Growing Projects.png"],
+			["Slade Gardeners<p> Slade Gardens Play Association<br />SW16 6PF<br /><br /><strong>Notes:</strong><br /></p>",51.41835312405038,-0.14635151025188267,"Food Growing Projects.png"],
+			["Granton Primary School<p><br />SW165AN<br /><br /><strong>Notes:</strong><br />School</p>",51.414206043264564,-0.14171606171194892,"Food Growing Projects.png"],
+			["Brixton (Tate) Library<p>2 Brixton Oval<br />SW2 1JQ<br /><br /><strong>Notes:</strong><br />020 7926 1056</p>",51.46110332761843,-0.11473458877226445,"Libraries.png"],
+			["Carnegie  Library<p>188 Herne Hill Road<br />SE24 0AG<br /><br /><strong>Notes:</strong><br />020 7926 6050</p>",51.46078321616338,-0.09659498158979102,"Libraries.png"],
+			["Clapham Library<p>1 Clapham Common North Side<br />SW4 0QW<br /><br /><strong>Notes:</strong><br />020 7926 0717</p>",51.46375755189528,-0.14242475093195792,"Libraries.png"],
+			["Durning Library<p>167 Kennington Lane<br />SE11 4HF<br /><br /><strong>Notes:</strong><br />020 7926 8682</p>",51.48878871901202,-0.11009251085238846,"Libraries.png"],
+			["Minet / Lambeth Archives<p>52 Knatchbull Road<br />SE5 9QY<br /><br /><strong>Notes:</strong><br />020 7926 6076</p>",51.471294362597085,-0.10540160238433738,"Libraries.png"],
+			["South Lambeth Library<p>180 South Lambeth Road<br />SW8 1QP<br /><br /><strong>Notes:</strong><br />020 7926 0705</p>",51.4792006673747,-0.12396854108167923,"Libraries.png"],
+			["Streatham (Tate) Library<p>63 Streatham High Road<br />SW16 1PL<br /><br /><strong>Notes:</strong><br />020 7926 5804</p>",51.43157783327603,-0.1291569422594819,"Libraries.png"],
+			["Upper Norwood Library<p>39-41 Westow Hill<br />SE19 1TQ<br /><br /><strong>Notes:</strong><br /></p>",51.42004058997894,-0.08134521359980956,"Libraries.png"],
+			["Waterloo Library<p>114-118 Lower Marsh<br />SE1 7AE<br /><br /><strong>Notes:</strong><br />020 7926 8690</p>",51.50095990198927,-0.11314785679376112,"Libraries.png"],
+			["West Norwood Library<p>1-5 Norwood High Street<br />SE27 9JX<br /><br /><strong>Notes:</strong><br />020 7926 8092</p>",51.43320370491431,-0.10330926482818654,"Libraries.png"],
+			["Windmill Drive, Clapham Common South Side<p><br />SW4 9DA<br /><br /><strong>Notes:</strong><br />CM, T, S, W</p>",51.45729086421891,-0.14370892605389052,"Recycling Banks.png"],
+			["Weir Road, junction with Atkins Road<p><br />SW12 0NN<br /><br /><strong>Notes:</strong><br />CM</p>",51.44789054701446,-0.13796771638257935,"Recycling Banks.png"],
+			["Sainsburys, Wandsworth Road<p><br />SW8 2LF<br /><br /><strong>Notes:</strong><br />CM, W</p>",51.48063098079314,-0.12877828120820126,"Recycling Banks.png"],
+			["Voltaire Road<p><br />SW4 6DH<br /><br /><strong>Notes:</strong><br />CM</p>",51.465094747939084,-0.13214698645986675,"Recycling Banks.png"],
+			["Telford Avenue, junction with Streatham Hill<p><br />SW2 4RB<br /><br /><strong>Notes:</strong><br />CM, T, S, W</p>",51.44227973022737,-0.12491324212548077,"Recycling Banks.png"],
+			["Studley Road, junction with Binfield Road<p><br />SW4 6RA<br /><br /><strong>Notes:</strong><br />CM, W</p>",51.472597010231695,-0.1234339410461013,"Recycling Banks.png"],
+			["Streatham High Road, junction with Gracefield Gardens<p><br />SW16 2TA<br /><br /><strong>Notes:</strong><br />CM, W</p>",51.432966690525745,-0.1283851619281499,"Recycling Banks.png"],
+			["St John's Crescent, junction with Brixton Road<p><br /><br /><br /><strong>Notes:</strong><br />CM, W</p>",51.46626383034811,-0.11321967226576615,"Recycling Banks.png"],
+			["Sainsburys, Streatham High Road<p><br />SW16 3PY<br /><br /><strong>Notes:</strong><br />CM, S, B, M</p>",51.41913365182192,-0.12813450399440374,"Recycling Banks.png"],
+			["Sainsburys, Clapham High Street<p><br />SW4 7SL<br /><br /><strong>Notes:</strong><br />CM</p>",51.4624648567472,-0.13585412588491874,"Recycling Banks.png"],
+			["Hardel Rise, junction with Christchurch Road<p><br />SW2 3DQ<br /><br /><strong>Notes:</strong><br />CM, T, S, W</p>",51.44055550171762,-0.10889253818717123,"Recycling Banks.png"],
+			["Crystal Palace Parade<p><br /><br /><br /><strong>Notes:</strong><br />CM, W</p>",51.41990408823735,-0.078963219642294,"Recycling Banks.png"],
+			["Clapham Road, junction with Albert Square<p><br />SW8 1HY<br /><br /><strong>Notes:</strong><br />M</p>",51.476483040975076,-0.1183597501844083,"Recycling Banks.png"],
+			["Chapel Road, junction with Knight's Hill<p><br />SE27 0TY<br /><br /><strong>Notes:</strong><br />CM, T, S, W</p>",51.42783751264324,-0.10437727198534438,"Recycling Banks.png"],
+			["Brixton Hill, junction with Jebb Avenue<p><br />SW2 1SD<br /><br /><strong>Notes:</strong><br />CM</p>",51.451714941280834,-0.12184517285281662,"Recycling Banks.png"],
+			["Beadman Street, junction with Ernest Avenue<p><br />SE27 0HH<br /><br /><strong>Notes:</strong><br />CM, T, S</p>",51.42983847134255,-0.10306215423603854,"Recycling Banks.png"],
+			["Acre Lane, Tesco<p><br />SW2 5RS<br /><br /><strong>Notes:</strong><br />CM, T, S, B, M, W</p>",51.46029168431364,-0.1189182890225906,"Recycling Banks.png"],
+			["Barrington Road, outside shopping parade<p><br />SW9 7EH<br /><br /><strong>Notes:</strong><br />CM, T, S, W</p>",51.466852200495715,-0.10493115109421547,"Recycling Banks.png"],
+			["Baylis Road<p><br />SE1 7AA<br /><br /><strong>Notes:</strong><br />CM, T, S, W</p>",51.50159902415398,-0.11033458310253538,"Recycling Banks.png"],
+			["The Pavement<p><br /><br /><br /><strong>Notes:</strong><br />CM, T, S, P, W</p>",51.4615839657934,-0.1388487509266918,"Recycling Banks.png"],
+			["King's Avenue, junction with Clarence Avenue<p><br />SW4 8EB<br /><br /><strong>Notes:</strong><br />CM, W</p>",54.66394230568589,0.014877448663583625,"Recycling Banks.png"],
+			["Nettlefold Hall, Norwood High Street<p><br />SE27 9JX<br /><br /><strong>Notes:</strong><br />CM, W</p>",51.43194473114739,-0.10447642897662864,"Recycling Banks.png"],
+			["Archbishop Sumner C.E.<p>Reedworth Street<br />SE11 4PH<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.49159206884073,-0.10994776622944645,"Schools.png"],
+			["Archbishop Tenison's C.E.<p>55 Kennington Oval<br />SE11 5SR<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.4824902798753,-0.11601305436704623,"Schools.png"],
+			["Ashmole<p>Ashmole Street<br />SW8 1NT<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.48201414886461,-0.11492370537173421,"Schools.png"],
+			["Allen Edwards<p>Studley Road, Larkhall Lane <br />SW4 6RP<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.47239650882858,-0.12754510118429158,"Schools.png"],
+			["Clapham Manor<p>Belmont Road<br />SW4 0BZ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46440855225417,-0.13754664831343416,"Schools.png"],
+			["Bishop Thomas Grant R.C.<p>Bell Trees Grove<br />SW16 2HY<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.42497210325908,-0.11872484945051164,"Schools.png"],
+			["Bonneville<p>Bonneville Gardens<br />SW4 9LB<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45313844096047,-0.13966057024791395,"Schools.png"],
+			["Christ Church (Brixton) C.E.<p>Cancell Road<br />SW9 6HN<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.47623047409667,-0.10813476172689039,"Schools.png"],
+			["Christ Church (Streatham) C.E.<p>Cotherstone Road<br />SW2 3NF<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.44474662303289,-0.1215098890535592,"Schools.png"],
+			["Crown Lane<p>Crown Lane<br />SW16 3HX<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.423430831006954,-0.10900716458413304,"Schools.png"],
+			["Effra Early Years &amp; Children's Centre<p>Barnwell Road<br />SW2 1PL<br /><br /><strong>Notes:</strong><br />Nursery School</p>",51.456699905249785,-0.1098924318887579,"Schools.png"],
+			["Elm Court<p>Elm Park<br />SW2 2EF<br /><br /><strong>Notes:</strong><br />Special School</p>",51.4480759846192,-0.11715652900206742,"Schools.png"],
+			["Elm Wood<p>Carnac Street<br />SE27 9RR<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.432012376214814,-0.09196448053267664,"Schools.png"],
+			["Ethelred Nursery School &amp; Children's Centre<p>10 Lollard Street<br />SE11 6UP<br /><br /><strong>Notes:</strong><br />Nursery School</p>",51.49096092117906,-0.11207700823599802,"Schools.png"],
+			["Fenstanton<p>Abbots Park<br />SW2 3PW<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.442246184526404,-0.11364059739421756,"Schools.png"],
+			["Glenbrook<p>Clarence Avenue<br />SW4 8LD<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45300083560893,-0.13213859766601724,"Schools.png"],
+			["Granton<p>Granton Road<br />SW16 5AN<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.41451104114936,-0.1422357885255999,"Schools.png"],
+			["Heathbrook<p>St Rule Street<br />SW8 3EH<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.4701179514591,-0.1431599144387435,"Schools.png"],
+			["Henry Cavendish (Balham)<p>Hydethorpe Road<br />SW12 0JA<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.444744075776256,-0.14279348639985118,"Schools.png"],
+			["Henry Cavendish (Streatham)<p>Dingley Lane<br />SW16 1AU<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.43711668460782,-0.13193774615846487,"Schools.png"],
+			["Henry Fawcett<p>Bowling Green Street<br />SE11 5BZ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.484707819249756,-0.11187439081165959,"Schools.png"],
+			["Herbert Morrison<p>Hartington Road<br />SW8 2HP<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.47865567226065,-0.12587745516918283,"Schools.png"],
+			["Hill Mead<p>Hillmead Drive<br />SW9 8UE<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46196394694793,-0.10731401523616546,"Schools.png"],
+			["Hitherfield<p>Leigham Vale<br />SW16 2JQ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.43656002797546,-0.1157021258394711,"Schools.png"],
+			["Holy Trinity C.E.<p>Upper Tulse Hill<br />SW2 2LR<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.44755572124543,-0.11835802344699096,"Schools.png"],
+			["Immanuel &amp; St Andrew's C.E.<p>Buckleigh Road<br />SW16 5SL<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.419340681953976,-0.13152638352208984,"Schools.png"],
+			["Iqra<p>Park Hill<br />SW4 9PA<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45524237568651,-0.13003197164950647,"Schools.png"],
+			["Jessop<p>Lowden Road<br />SE24 0BJ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46003297232927,-0.1013478651147056,"Schools.png"],
+			["Jubilee<p>Tulse Hill<br />SW2 2JE<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45241153465584,-0.11386928646890103,"Schools.png"],
+			["Julian's<p>226 Leigham Court Road<br />SW16 2RB<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.429439758389385,-0.11526140967858463,"Schools.png"],
+			["King's Avenue<p>King's Avenue<br />SW4 8BQ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45710148309743,-0.12988402103482882,"Schools.png"],
+			["Kingswood<p>Gipsy Road<br />SE27 9RD<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.42689154999798,-0.09006321988429183,"Schools.png"],
+			["La Retraite R.C.<p>Aitkins Road<br />SW12 0AB<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.447913729396454,-0.1447660259070428,"Schools.png"],
+			["Lansdowne<p>Argyll Close, Dalyell Road<br />SW9 9QL<br /><br /><strong>Notes:</strong><br />Special School</p>",51.46709674830333,-0.12004500452171701,"Schools.png"],
+			["Lark Hall<p>Smedley Street<br />SW4 6PH<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.4705034446703,-0.12950882373828984,"Schools.png"],
+			["Lilian Baylis Technology<p>323 Kennington Lane<br />SE11 5QY<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.48603502817728,-0.11779701709240138,"Schools.png"],
+			["Livity<p>Mandrell Road<br />SW2 5DW<br /><br /><strong>Notes:</strong><br />Special School</p>",51.45590228176868,-0.1263057503694658,"Schools.png"],
+			["London Nautical<p>61 Stamford Street<br />SE1 9NA<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.50643889819083,-0.10828151827130213,"Schools.png"],
+			["Loughborough<p>Minet Road<br />SW9 7UA<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46955297419285,-0.10504179290686134,"Schools.png"],
+			["Macaulay C.E.<p>Victoria Rise<br />SW4 0NU<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.463656816512504,-0.14742438918811976,"Schools.png"],
+			["Maytree Nursery School &amp; Children's Centre<p>155 Clarence Crescent<br />SW4 8LN<br /><br /><strong>Notes:</strong><br />Nursery School</p>",51.451561808745474,-0.1321253687941634,"Schools.png"],
+			["Michael Tippett<p>Heron Road<br />SE24 0HZ<br /><br /><strong>Notes:</strong><br />Special School</p>",51.461505504208034,-0.1006533363074846,"Schools.png"],
+			["Norwood<p>Crown Dale<br />SE19 3NY<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.423180607961406,-0.0996536828477787,"Schools.png"],
+			["Orchard<p>Christchurch Road<br />SW2 3ET<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.445231213411404,-0.12256930005560253,"Schools.png"],
+			["Paxton<p>Woodland Road<br />SE19 1PA<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.42196229741515,-0.08117843111481521,"Schools.png"],
+			["Reay<p>Hackford Road<br />SW9 0EN<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.477502169026636,-0.11506653633467778,"Schools.png"],
+			["Richard Atkins<p>New Park Road<br />SW2 4JP<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.4480888860646,-0.12694224028867046,"Schools.png"],
+			["Rosendale<p>Turney Road<br />SE21 8LX<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.446248428682836,-0.0980917025656594,"Schools.png"],
+			["St Andrew's C.E.<p>Kay Road<br />SW9 9DE<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46867313048345,-0.12245666721996255,"Schools.png"],
+			["St Andrew's R.C.<p>Polworth Road<br />SW16 2ET<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.424375623076735,-0.12752363134210254,"Schools.png"],
+			["St Anne's R.C.<p>6 Durham Street<br />SE11 5JA<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.48561916607241,-0.11934089796636113,"Schools.png"],
+			["St Bede's R.C.<p>Thornton Road<br />SW12 0LF<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.44452162157096,-0.13557854151465185,"Schools.png"],
+			["St Bernadette R.C.<p>Atkins Road<br />SW12 0AB<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.447109660194755,-0.1428270244410165,"Schools.png"],
+			["St Helen's R.C.<p>Knowle Close<br />SW9 0TQ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46711600679657,-0.1134069507346987,"Schools.png"],
+			["St John's (Angell Town) C.E.<p>85 Angell Road<br />SW9 7HH<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.468053594927234,-0.10853060299001363,"Schools.png"],
+			["St John's The Divine C.E.<p>Warham Street<br />SE5 0SX<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.47902814242023,-0.10374180721775433,"Schools.png"],
+			["St Jude's C.E.<p>Regent Road<br />SE24 0EL<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45431920755857,-0.10502500488746627,"Schools.png"],
+			["St Leonard's C.E.<p>42 Mitcham Lane<br />SW16 6NP<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.42707716849595,-0.1356557473972372,"Schools.png"],
+			["St Luke's C.E.<p>Linton Grove<br />SE27 0DZ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.426808513234484,-0.09989156280699645,"Schools.png"],
+			["St Mark's C.E.<p>Harleyford Road<br />SE11 5SL<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.48457018149526,-0.11729561785712499,"Schools.png"],
+			["St Martin-in-the-Fields C of E<p>155 Tulse Hill<br />SW2 3UP<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.44415194126522,-0.10969107114371585,"Schools.png"],
+			["St Mary's R.C.<p>Crescent Lane<br />SW4 9QJ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45924984314178,-0.1383036659810665,"Schools.png"],
+			["St Saviour's C.E.<p>Herne Hill Road<br />SE24 0AY<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.46370922611572,-0.09791288150619204,"Schools.png"],
+			["St Stephen's C.E.<p>Dorset Road<br />SW8 1EJ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.47974056287876,-0.12230461578879408,"Schools.png"],
+			["Stockwell<p>Stockwell Road<br />SW9 9TG<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.466606109010364,-0.1180495392071023,"Schools.png"],
+			["Streatham Wells<p>50 Palace Road<br />SW2 3NJ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.44005654476213,-0.11560138948228871,"Schools.png"],
+			["Sudbourne<p>Hayter Road<br />SW2 5AP<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.458416055461946,-0.11930770682404074,"Schools.png"],
+			["Sunnyhill<p>Sunnyhill Road<br />SW16 2UW<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.42909473460679,-0.12009477279497116,"Schools.png"],
+			["Telferscot<p>Telferscot Road<br />SW12 0HW<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.44315457863659,-0.13669907457047492,"Schools.png"],
+			["The Park Campus<p>Gipsy Road<br />SE27 9TG<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.428296703647035,-0.0979453443440536,"Schools.png"],
+			["Tree House Children's Centre at Holmewood Nursery School<p>66 Upper Tulse Hill<br />SW2 2RW<br /><br /><strong>Notes:</strong><br />Nursery School</p>",51.44750945245523,-0.12051862879422957,"Schools.png"],
+			["Triangle Nursery School &amp; Children's Centre<p>25 William Bonney Estate<br />SW4 7JQ<br /><br /><strong>Notes:</strong><br />Nursery School</p>",51.46080467303604,-0.13315878036384565,"Schools.png"],
+			["Turney<p>Turney Road<br />SE21 8LX<br /><br /><strong>Notes:</strong><br />Special School</p>",51.44700808783811,-0.09780109466354382,"Schools.png"],
+			["Vauxhall<p>Vauxhall Street<br />SE11 5LG<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.48892895318678,-0.1176922414042046,"Schools.png"],
+			["Walnut Tree Walk<p>Walnut Tree Walk<br />SE11 6DS<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.49394943625015,-0.1133797298997666,"Schools.png"],
+			["Woodmansterne<p>Stockport Road<br />SW16 5XE<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.41252201258837,-0.13590279516680442,"Schools.png"],
+			["Wyvil<p>Wyvil Road<br />SW8 2TJ<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.48129292433458,-0.12546690010968015,"Schools.png"],
+			["Charles Edward Brooke (Brooke site)<p>Langton Road<br />SW9 6UL<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.47597591914502,-0.10239955675665285,"Schools.png"],
+			["Charles Edward Brooke (Dennen site)<p>Cormont Road<br />SE5 9RF<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.4736922355339,-0.10576304227884784,"Schools.png"],
+			["The Elmgreen<p>Elmcourt Road<br />SE27 9BZ<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.43875642094966,-0.10246053458663208,"Schools.png"],
+			["Stockwell Park High<p>Clapham Road<br />SW9 0AL<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.4731542221427,-0.11982478425855127,"Schools.png"],
+			["Dunraven<p>94-98 Leigham Court Road<br />SW16 2QB<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.433109033255334,-0.11975734474513591,"Schools.png"],
+			["Lambeth Academy<p>Elms Road<br />SW4 9ET<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.457414470804835,-0.13994733903062778,"Schools.png"],
+			["Evelyn Grace Academy<p>Shakespeare Road<br />SE24 0PZ<br /><br /><strong>Notes:</strong><br />Secondary School</p>",51.460832927087104,-0.1035459804322996,"Schools.png"],
+			["Corpus Christi R.C. (Academy)<p>13-14 Trent Road<br />SW2 5BL<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.45555600534437,-0.12040404519387332,"Schools.png"],
+			["Durand Academy<p>Hackford Road<br />SW9 0RD<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.4746562169223,-0.11591825087063055,"Schools.png"],
+			["Johanna Primary Oasis Academy<p>Johanna Street<br />SE1 7RH<br /><br /><strong>Notes:</strong><br />Primary School</p>",51.50070695896677,-0.1114005121581045,"Schools.png"],
+			["Coldharbour<p>85 Angell Town<br />SW9 7HH<br /><br /><strong>Notes:</strong><br /></p>",51.46798332703018,-0.10863429369539551,"Polling Stations.png"],
+			["Coldharbour<p>Minet Road<br />SW9 7UA<br /><br /><strong>Notes:</strong><br /></p>",51.46968274005072,-0.10528118829805318,"Polling Stations.png"],
+			["Coldharbour<p>63 Effra Road<br />SW2 1BZ<br /><br /><strong>Notes:</strong><br /></p>",51.45706639155673,-0.11366301361626244,"Polling Stations.png"],
+			["Coldharbour<p>Hillmead Drive, Moorland Road<br />SW9 8UE<br /><br /><strong>Notes:</strong><br /></p>",51.46181946431205,-0.1072768052698865,"Polling Stations.png"],
+			["Herne Hill<p>115 Lilford Road<br />SE5 9HY<br /><br /><strong>Notes:</strong><br /></p>",51.46894885465996,-0.09883243050083824,"Polling Stations.png"],
+			["Herne Hill<p>69 Herne Hill Road<br />SE24 0AY<br /><br /><strong>Notes:</strong><br /></p>",51.46300710714578,-0.09787009467300259,"Polling Stations.png"],
+			["Herne Hill<p>Lowden Road<br />SE24 0BJ<br /><br /><strong>Notes:</strong><br /></p>",51.460041259898944,-0.10130433517633015,"Polling Stations.png"],
+			["Herne Hill<p>Regent Road<br />SE24 0EL<br /><br /><strong>Notes:</strong><br /></p>",51.454294340443525,-0.10515557632765732,"Polling Stations.png"],
+			["Thurlow Park<p>Trinity Rise<br />SW2 2QP<br /><br /><strong>Notes:</strong><br /></p>",51.44512707916814,-0.10937738011894269,"Polling Stations.png"],
+			["Thurlow Park<p>99A Peabody Cottages, Rosendale Road<br />SE24 9DP<br /><br /><strong>Notes:</strong><br /></p>",51.446308155818876,-0.10344267703261607,"Polling Stations.png"],
+			["Thurlow Park<p>Rosendale Road / Turney Road<br />SE21 8LR<br /><br /><strong>Notes:</strong><br /></p>",51.44666005850134,-0.09852072346805742,"Polling Stations.png"],
+			["Thurlow Park<p>246 Norwood Road<br />SE24 9AW<br /><br /><strong>Notes:</strong><br /></p>",51.437679692368874,-0.10594395954142788,"Polling Stations.png"],
+			["Thurlow Park<p>Chatsworth Way<br />SE27 9HN<br /><br /><strong>Notes:</strong><br /></p>",51.43601894077088,-0.10112081475516452,"Polling Stations.png"],
+			["Knights Hill<p>Knight's Hill<br />SE27 0HS<br /><br /><strong>Notes:</strong><br /></p>",51.4322338461212,-0.103392593013816,"Polling Stations.png"],
+			["Knights Hill<p>Leigham Court Road<br />SW16 2SD<br /><br /><strong>Notes:</strong><br /></p>",51.43186960480547,-0.11481613697027977,"Polling Stations.png"],
+			["Knights Hill<p>128 Knight's Hill<br />SE27 0JL<br /><br /><strong>Notes:</strong><br /></p>",51.42920877010014,-0.10484134245344538,"Polling Stations.png"],
+			["Knights Hill<p>Crown Lane<br />SW16 3HX<br /><br /><strong>Notes:</strong><br /></p>",51.42360621653135,-0.10928760199092868,"Polling Stations.png"],
+			["Knights Hill<p>Linton Grove<br />SE27 0DZ<br /><br /><strong>Notes:</strong><br /></p>",51.42688869365402,-0.09984508194398733,"Polling Stations.png"],
+			["Gipsy Hill<p>Carnac Street<br />SE27 9RR<br /><br /><strong>Notes:</strong><br /></p>",51.43211216482229,-0.09201786916882777,"Polling Stations.png"],
+			["Gipsy Hill<p>Gipsy Road / Salters Hill<br />SE27 9RD<br /><br /><strong>Notes:</strong><br /></p>",51.42691116306847,-0.09016309658286831,"Polling Stations.png"],
+			["Gipsy Hill<p>Gipsy Road<br />SE27 9NP<br /><br /><strong>Notes:</strong><br /></p>",51.428144864429775,-0.09800919109682654,"Polling Stations.png"],
+			["Gipsy Hill<p>2 Berridge Road<br />SE19 1EF<br /><br /><strong>Notes:</strong><br /></p>",51.42495678675188,-0.08887807106769521,"Polling Stations.png"],
+			["Gipsy Hill<p>Highland Road<br />SE19 1DP<br /><br /><strong>Notes:</strong><br /></p>",51.421615569470916,-0.08417029296392155,"Polling Stations.png"],
+			["Tulse Hill<p>10 St Matthew's Road<br />SW2 1NH<br /><br /><strong>Notes:</strong><br /></p>",51.45759631472976,-0.11641931186113667,"Polling Stations.png"],
+			["Tulse Hill<p>Arodene Road<br />SW2 2BH<br /><br /><strong>Notes:</strong><br /></p>",51.45384181914659,-0.11893436773173674,"Polling Stations.png"],
+			["Tulse Hill<p>Tulse Hill<br />SW2 2JE<br /><br /><strong>Notes:</strong><br /></p>",51.452222583326076,-0.11386268131855175,"Polling Stations.png"],
+			["Tulse Hill<p>Upper Tulse Hill<br />SW2 2RL<br /><br /><strong>Notes:</strong><br /></p>",51.44756493881229,-0.11837203588475156,"Polling Stations.png"],
+			["Tulse Hill<p>Abbotts Park<br />SW2 3PW<br /><br /><strong>Notes:</strong><br /></p>",51.44275194395383,-0.1132168406587916,"Polling Stations.png"],
+			["Brixton Hill<p>Hayter Road<br />SW2 5AP<br /><br /><strong>Notes:</strong><br /></p>",51.45840108226995,-0.1194954544797229,"Polling Stations.png"],
+			["Brixton Hill<p>61 Lyham Road<br />SW2 5DH<br /><br /><strong>Notes:</strong><br /></p>",51.45625800433158,-0.12774498733728115,"Polling Stations.png"],
+			["Brixton Hill<p>New Park Road<br />SW2 4JP<br /><br /><strong>Notes:</strong><br /></p>",51.448123683858974,-0.12686885857383104,"Polling Stations.png"],
+			["Brixton Hill<p>66 Upper Tulse Hill<br />SW2 2RW<br /><br /><strong>Notes:</strong><br /></p>",51.447518669768144,-0.12053264166001652,"Polling Stations.png"],
+			["Clapham Common<p>Kings Avenue<br />SW4 8BQ<br /><br /><strong>Notes:</strong><br /></p>",51.45708052607962,-0.1296977510708627,"Polling Stations.png"],
+			["Clapham Common<p>Crescent Lane<br />SW4 9QJ<br /><br /><strong>Notes:</strong><br /></p>",51.45931556811016,-0.13791232556608354,"Polling Stations.png"],
+			["Clapham Common<p>Bonneville Gardens<br />SW4 9LB<br /><br /><strong>Notes:</strong><br /></p>",51.45283731088756,-0.13938495196311762,"Polling Stations.png"],
+			["Clapham Common<p>Bonneville Gardens<br />SW4 9LB<br /><br /><strong>Notes:</strong><br /></p>",51.45280920892574,-0.13931412960582665,"Polling Stations.png"],
+			["Thornton<p>Clarence Avenue<br />SW4 8LD<br /><br /><strong>Notes:</strong><br /></p>",51.45310289858057,-0.13233593504172433,"Polling Stations.png"],
+			["Thornton<p>New Park Road<br />SW2 4LH<br /><br /><strong>Notes:</strong><br /></p>",51.44628239759044,-0.1298223996478304,"Polling Stations.png"],
+			["Thornton<p>Scrutton Close<br />SW12 0AW<br /><br /><strong>Notes:</strong><br /></p>",51.44749831511625,-0.1333273766391768,"Polling Stations.png"],
+			["Thornton<p>12 Poynders Road<br />SW4 8NY<br /><br /><strong>Notes:</strong><br /></p>",51.450342460362286,-0.1408392482976199,"Polling Stations.png"],
+			["Thornton<p>Hydethorpe Road<br />SW12 0JA<br /><br /><strong>Notes:</strong><br /></p>",51.44432035104116,-0.14386116996351433,"Polling Stations.png"],
+			["Streatham Hill<p>27 Streatham Place<br />SW2 4QQ<br /><br /><strong>Notes:</strong><br /></p>",51.4462700662567,-0.12792329838422006,"Polling Stations.png"],
+			["Streatham Hill<p>35A Killieser Avenue<br />SW2 4NX<br /><br /><strong>Notes:</strong><br /></p>",51.440027652094265,-0.12951673757697368,"Polling Stations.png"],
+			["Streatham Hill<p>50 Palace Road<br />SW2 3NJ<br /><br /><strong>Notes:</strong><br /></p>",51.43995471481507,-0.11597969434818489,"Polling Stations.png"],
+			["Streatham Hill<p>Cricklade Avenue<br />SW2 3BH<br /><br /><strong>Notes:</strong><br /></p>",51.43867504044541,-0.11973021708830651,"Polling Stations.png"],
+			["Streatham Hill<p>138 Christchurch Road<br />SW2 3DQ<br /><br /><strong>Notes:</strong><br /></p>",51.440065944310064,-0.10725536623996346,"Polling Stations.png"],
+			["Streatham Wells<p>Hitherfield Road<br />SW16 2JQ<br /><br /><strong>Notes:</strong><br /></p>",51.436231851887925,-0.11486674972074129,"Polling Stations.png"],
+			["Streatham Wells<p>63 Streatham High Road<br />SW16 1PL<br /><br /><strong>Notes:</strong><br /></p>",51.43164835041177,-0.12906774348685407,"Polling Stations.png"],
+			["Streatham Wells<p>Sunnyhill Road / Valley Road<br />SW16 2UW<br /><br /><strong>Notes:</strong><br /></p>",51.42906846622307,-0.1201390076454444,"Polling Stations.png"],
+			["Streatham Wells<p>Polworth Road<br />SW16 2ET<br /><br /><strong>Notes:</strong><br /></p>",51.42438483952909,-0.127537638681949,"Polling Stations.png"],
+			["Streatham Wells<p>226 Leigham Court Road<br />SW16 2RB<br /><br /><strong>Notes:</strong><br /></p>",51.42924459395578,-0.11542768268578928,"Polling Stations.png"],
+			["St Leonards<p>Dingley Lane, off Woodfield Avenue<br />SW16 1AU<br /><br /><strong>Notes:</strong><br /></p>",51.43718096708665,-0.1320214520576801,"Polling Stations.png"],
+			["St Leonards<p>8 Tooting Bec Gardens<br />SW16 1RB<br /><br /><strong>Notes:</strong><br /></p>",51.42998209456627,-0.13228630643216122,"Polling Stations.png"],
+			["St Leonards<p>42 Mitcham Lane<br />SW16 6NP<br /><br /><strong>Notes:</strong><br /></p>",51.427170534350296,-0.13530670887560395,"Polling Stations.png"],
+			["St Leonards<p>Natel Road<br />SW16 6JR<br /><br /><strong>Notes:</strong><br /></p>",51.422958313217165,-0.13281719900642244,"Polling Stations.png"],
+			["Streatham South<p>452 Streatham High Road<br />SW16 3PY<br /><br /><strong>Notes:</strong><br /></p>",51.42052898604331,-0.12878832810601115,"Polling Stations.png"],
+			["Streatham South<p>159 Ellison Road<br />SW16 5DE<br /><br /><strong>Notes:</strong><br /></p>",51.413876992974124,-0.12782321391774357,"Polling Stations.png"],
+			["Streatham South<p>Stockport Road<br />SW16 5XE<br /><br /><strong>Notes:</strong><br /></p>",51.41273181975745,-0.13495953544597383,"Polling Stations.png"],
+			["Streatham South<p>Granton Road<br />SW16 5AN<br /><br /><strong>Notes:</strong><br /></p>",51.414501370746095,-0.1421930377477947,"Polling Stations.png"],
+			["Bishops<p>106 The Cut<br />SE1 8LN<br /><br /><strong>Notes:</strong><br /></p>",51.502657023409945,-0.10908653320753925,"Polling Stations.png"],
+			["Bishops<p>Johanna Street, off Lower Marsh<br />SE1 7RH<br /><br /><strong>Notes:</strong><br /></p>",51.50068069493135,-0.11144482231807977,"Polling Stations.png"],
+			["Bishops<p>218 Lambeth Road<br />SE1 7JY<br /><br /><strong>Notes:</strong><br /></p>",51.50266577777932,-0.10907176206653994,"Polling Stations.png"],
+			["Bishops<p>Walnut Tree Walk<br />SE11 6DS<br /><br /><strong>Notes:</strong><br /></p>",51.49410105015788,-0.11330143983363627,"Polling Stations.png"],
+			["Princes<p>Lilian Baylis old school, Lollard Street<br />SE11 6PY<br /><br /><strong>Notes:</strong><br /></p>",51.49236815450957,-0.1151448632133054,"Polling Stations.png"],
+			["Princes<p>Vauxhall Street<br />SE11 5LG<br /><br /><strong>Notes:</strong><br /></p>",51.488848766820844,-0.11773875709012664,"Polling Stations.png"],
+			["Princes<p>Vauxhall Street<br />SE11 5LG<br /><br /><strong>Notes:</strong><br /></p>",51.48886812653642,-0.11782438607674298,"Polling Stations.png"],
+			["Princes<p>Reedworth Street<br />SE11 4PH<br /><br /><strong>Notes:</strong><br /></p>",51.491611202218685,-0.11001900120764223,"Polling Stations.png"],
+			["Princes<p>167 Kennington Lane<br />SE11 4HF<br /><br /><strong>Notes:</strong><br /></p>",51.48895372568866,-0.11028734940376894,"Polling Stations.png"],
+			["Oval<p>Bowling Green Street<br />SE11 5BZ<br /><br /><strong>Notes:</strong><br /></p>",51.48470323632567,-0.11214823869647131,"Polling Stations.png"],
+			["Oval<p>Entrance in Vauxhall Grove<br />SE11 5AY<br /><br /><strong>Notes:</strong><br /></p>",51.48527839544715,-0.12052158205705375,"Polling Stations.png"],
+			["Oval<p>Wyvil Road<br />SW8 2TJ<br /><br /><strong>Notes:</strong><br /></p>",51.481359972780176,-0.125723386888881,"Polling Stations.png"],
+			["Oval<p>Ashmole Street<br />SW8 1NT<br /><br /><strong>Notes:</strong><br /></p>",51.482023135485576,-0.11492333479603772,"Polling Stations.png"],
+			["Oval<p>Ashmole Street<br />SW8 1NT<br /><br /><strong>Notes:</strong><br /></p>",51.48200562505302,-0.11495286131690476,"Polling Stations.png"],
+			["Stockwell<p>Hemans Estate, Fount Street<br />SW8 4SE<br /><br /><strong>Notes:</strong><br /></p>",51.47902346473943,-0.13032677008669066,"Polling Stations.png"],
+			["Stockwell<p>Rear of 283-291 Wandsworth Road<br />SW8 2ND<br /><br /><strong>Notes:</strong><br /></p>",51.47766424306093,-0.12911507975368466,"Polling Stations.png"],
+			["Stockwell<p>Dorset Road<br />SW8 1EJ<br /><br /><strong>Notes:</strong><br /></p>",51.47976544835059,-0.12217398013925575,"Polling Stations.png"],
+			["Stockwell<p>Studley Road<br />SW4 6RP<br /><br /><strong>Notes:</strong><br /></p>",51.472799071647785,-0.12741342328327288,"Polling Stations.png"],
+			["Stockwell<p>Stockwell Park Crescent<br />SW9 0DA<br /><br /><strong>Notes:</strong><br /></p>",51.47172342037101,-0.11752217795723367,"Polling Stations.png"],
+			["Vassall<p>Hackford Road<br />SW9 0EN<br /><br /><strong>Notes:</strong><br /></p>",51.477502169026636,-0.11506653633467778,"Polling Stations.png"],
+			["Vassall<p>Hackford Road<br />SW9 0RD<br /><br /><strong>Notes:</strong><br /></p>",51.4745827049549,-0.11582048062806875,"Polling Stations.png"],
+			["Vassall<p>Cancell Road<br />SW9 6HN<br /><br /><strong>Notes:</strong><br /></p>",51.47623070631701,-0.10814915253792723,"Polling Stations.png"],
+			["Vassall<p>Cormont Road<br />SE5 9RF<br /><br /><strong>Notes:</strong><br /></p>",51.47362708470381,-0.10618332960546203,"Polling Stations.png"],
+			["Ferndale<p>364 Brixton Road<br />SW9 OTH<br /><br /><strong>Notes:</strong><br /></p>",51.46670377920581,-0.11349594092486859,"Polling Stations.png"],
+			["Ferndale<p>Stockwell Road<br />SW9 9TG<br /><br /><strong>Notes:</strong><br /></p>",51.466553112925276,-0.11810930914378182,"Polling Stations.png"],
+			["Ferndale<p>Ducie Street<br />SW4 7QG<br /><br /><strong>Notes:</strong><br /></p>",51.461538853156945,-0.12282146025834974,"Polling Stations.png"],
+			["Ferndale<p>Hetherington Road<br />SW4 7NU<br /><br /><strong>Notes:</strong><br /></p>",51.46105065777219,-0.12828303113354295,"Polling Stations.png"],
+			["Ferndale<p>Nelson's Row<br />SW4 7JR<br /><br /><strong>Notes:</strong><br /></p>",51.462552513856465,-0.13505971495358524,"Polling Stations.png"],
+			["Larkhall<p>128 Willington Street<br />SW9 9NE<br /><br /><strong>Notes:</strong><br /></p>",51.463652968013655,-0.12624743413340334,"Polling Stations.png"],
+			["Larkhall<p>Smedley Street<br />SW4 6PH<br /><br /><strong>Notes:</strong><br /></p>",51.46987525805215,-0.13015364639030386,"Polling Stations.png"],
+			["Larkhall<p>110 Union Road<br />SW8 2SH<br /><br /><strong>Notes:</strong><br /></p>",51.47054120714207,-0.13300613520433371,"Polling Stations.png"],
+			["Larkhall<p>Kay Road<br />SW9 9DE<br /><br /><strong>Notes:</strong><br /></p>",51.46870308609727,-0.12264261176292628,"Polling Stations.png"],
+			["Clapham Town<p>Belmont Road<br />SW4 0BZ<br /><br /><strong>Notes:</strong><br /></p>",51.46448577569541,-0.13731315748149595,"Polling Stations.png"],
+			["Clapham Town<p>St Rule Street<br />SW8 3EH<br /><br /><strong>Notes:</strong><br /></p>",51.469819108467426,-0.1430280642507384,"Polling Stations.png"],
+			["Clapham Town<p>Victoria Rise<br />SW4 0NU<br /><br /><strong>Notes:</strong><br /></p>",51.46363889977621,-0.14231439797610201,"Polling Stations.png"],
+			["Clapham Town<p>25 William Bonney Estate<br />SW4 7JQ<br /><br /><strong>Notes:</strong><br /></p>",51.46083186237976,-0.13317206639687357,"Polling Stations.png"],
+			["Ferndale Community Sports Centre<p>Nursery Road<br />SW9 8BP<br /><br /><strong>Notes:</strong><br />0845 130 8998</p>",51.46316535332428,-0.11785471478677775,"Leisure Centres.png"],
+			["Clapham Leisure Centre<p>Clapham Manor Street<br />SW4 6DB<br /><br /><strong>Notes:</strong><br />020 7926 0700</p>",51.464123709925346,-0.13448755567914658,"Leisure Centres.png"],
+			["Flaxman Sports Centre<p>Carew Street<br />SE5 9DF<br /><br /><strong>Notes:</strong><br />020 7926 1054</p>",51.471544137273554,-0.09997081181118543,"Leisure Centres.png"],
+			["Brixton Recreation Centre<p>27 Brixton Station Road<br />SW9 8QQ<br /><br /><strong>Notes:</strong><br />020 7926 9779/9780</p>",51.463640655661045,-0.11331580232313589,"Leisure Centres.png"],
+			["Brockwell Lido<p>Dulwich Road<br />SE24 0PA<br /><br /><strong>Notes:</strong><br />020 7274 3088</p>",51.45313057034033,-0.10661820872245571,"Leisure Centres.png"]
+	    ];
+/*
+
+		var infowindow = new google.maps.InfoWindow();
+
+	    var marker, i;
+
+	    for (i = 0; i < locations.length; i++) {
+			addMarker();
+		}
+	
+		function addMarker() {  
+			marker = new google.maps.Marker({
+	        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+			icon:locations[i][3],
+			animation: google.maps.Animation.DROP,
+	        map: map
+	      });
+
+	      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+	        return function() {
+	          infowindow.setContent(locations[i][0]);
+	          infowindow.open(map, marker);
+	        }
+	      })(marker, i));
+	    }
+
+*/
+
+		var marker = [];
+
+		var i = 0;
+
+		function drop() {
+		  for (var i = 0; i < locations.length; i++) {
+		    setTimeout(function() {
+		    	addMarker();
+		    }, i * 30);
+		  }
+		}
+
+		drop();
+
+		var infowindow = new google.maps.InfoWindow();
+
+		function addMarker() {
+		    marker = new google.maps.Marker({
+		    position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+			icon:locations[i][3],
+		    map: map,
+		    draggable: false,
+		    animation: google.maps.Animation.DROP
+		  });
+
+		 google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		    return function() {
+		      infowindow.setContent(locations[i][0]);
+		      infowindow.open(map, marker);
+		    }
+		  })(marker, i));
+		  i++;
+
+		}
+
+	}
+
+</script>
+</head>
+<body onload="initialize()">
+  <div id="map_canvas" style="width:100%; height:100%"></div>
+	<img src="signpost.png" id="signpost">
+	<img src="made in lambeth.png" id="logo">
+</body>
+</html>
